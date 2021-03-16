@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:loja_virtual_flutter/screens/home_screen.dart';
 
-void main() {
-  runApp(MainPage());
-}
+void main() => runApp(MyApp());
 
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return MaterialApp(
+      title: 'Loja Virtual',
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          primaryColor: Color.fromARGB(255, 4, 125, 141)),
+      debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
+    );
   }
 }
