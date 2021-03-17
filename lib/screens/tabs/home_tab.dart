@@ -1,23 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:transparent_image/transparent_image.dart';
+import 'package:transparent_image/transparent_image.dart';
+
 class HomeTab extends StatelessWidget {
-
-
   @override
   Widget build(BuildContext context) {
-
     Widget _buildBodyBack() => Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 211, 118, 130),
-            Color.fromARGB(255, 253, 181, 168)
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight
-        )
-      ),
-    );
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color.fromARGB(255, 85, 151, 208),
+            Color.fromARGB(255, 55, 139, 206)
+          ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+        );
     return Stack(
       children: [
         _buildBodyBack(),
@@ -35,10 +31,12 @@ class HomeTab extends StatelessWidget {
             ),
             FutureBuilder<QuerySnapshot>(
               future: Firestore.instance
-              .collection('home').orderBy('pos').getDocuments(),
+                  .collection('home')
+                  .orderBy('pos')
+                  .getDocuments(),
               // ignore: missing_return
-              builder: (context, snapshot){
-                if(!snapshot.hasData){
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
                   return SliverToBoxAdapter(
                     child: Container(
                       height: 200.0,
@@ -48,16 +46,20 @@ class HomeTab extends StatelessWidget {
                       ),
                     ),
                   );
-                }else{
-                  print(snapshot.data.documents.length);
-                  return SliverToBoxAdapter(
-                    child: Container(
-                      height: 200.0,
-                      alignment: Alignment.center,
-                      child: Container(
-
-                      ),
-                    ),
+                } else {
+                  return SliverStaggeredGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 1.0,
+                    crossAxisSpacing: 1.0,
+                    staggeredTiles: snapshot.data.documents.map((doc) {
+                      return StaggeredTile.count(doc.data['x'], doc.data['y']);
+                    }).toList(),
+                    children: snapshot.data.documents.map((doc){
+                      return FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: doc.data['images'], fit: BoxFit.cover,
+                      );
+                    }).toList(),
                   );
                 }
               },
