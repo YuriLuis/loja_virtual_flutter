@@ -6,6 +6,7 @@ import 'package:loja_virtual_flutter/datas/product_data.dart';
 // ignore: must_be_immutable
 class ProductScreen extends StatefulWidget {
   final ProductData product;
+
   ProductScreen(this.product);
 
   @override
@@ -15,7 +16,9 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   final ProductData product;
   String size;
+
   _ProductScreenState(this.product);
+
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = Theme.of(context).primaryColor;
@@ -60,37 +63,61 @@ class _ProductScreenState extends State<ProductScreen> {
                   "Tamanho",
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 34.0,
-                child: GridView(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.5
+                SizedBox(
+                  height: 34.0,
+                  child: GridView(
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    scrollDirection: Axis.horizontal,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        mainAxisSpacing: 8.0,
+                        childAspectRatio: 0.5),
+                    children: product.sizes
+                        .map((e) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  size = e;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(4.0)),
+                                    border: Border.all(
+                                        color: e == size
+                                            ? primaryColor
+                                            : Colors.grey[500],
+                                        width: 3.0)),
+                                width: 50.0,
+                                alignment: Alignment.center,
+                                child: Text(e),
+                              ),
+                            ))
+                        .toList(),
                   ),
-                  children: product.sizes.map((e) =>
-                    GestureDetector(
-                      onTap: (){
-                        setState(() {
-                          size = e;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                          border: Border.all(
-                            color: e == size ? primaryColor : Colors.grey[500],
-                            width: 3.0
-                          )
-                        ),
-                        width: 50.0,
-                        alignment: Alignment.center,
-                        child: Text(e),
-                      ),
-                    )
-                  ).toList(),
-                ),)
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                SizedBox(
+                  height: 44.0,
+                  child: RaisedButton(
+                    onPressed: size != null ? (){} : null,
+                    child: Text(
+                      'Adicionar ao Carrinho',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    color: primaryColor,
+                    textColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16.0,),
+                Text(
+                  "Descrição",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+                ),
+                Text(product.description ,
+                style: TextStyle(fontSize: 16.0),)
               ],
             ),
           )
