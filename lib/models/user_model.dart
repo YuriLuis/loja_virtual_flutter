@@ -67,7 +67,9 @@ class UserModel extends Model {
         });
   }
 
-  void recoverPass() {}
+  void recoverPass(String email) {
+    _auth.sendPasswordResetEmail(email: email);
+  }
 
   // ignore: missing_return
   bool isLoggedIn() {
