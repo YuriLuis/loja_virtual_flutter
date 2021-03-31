@@ -1,13 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loja_virtual_flutter/models/user_model.dart';
 import 'package:loja_virtual_flutter/screens/login_screen.dart';
 import 'package:loja_virtual_flutter/tiles/drawer_tile.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class CustomDrawer extends StatelessWidget {
-
   final PageController pageController;
 
   CustomDrawer(this.pageController);
+
+  bool isNotLogged(UserModel user) {
+    return !user.isLoggedIn();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget _buildDrawerBack() => Container(
@@ -42,40 +48,54 @@ class CustomDrawer extends StatelessWidget {
                               fontStyle: FontStyle.normal),
                         )),
                     Positioned(
-                      left: 0.0,
-                      bottom: 0.0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Olá,' , style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold
-                          ),),
-                          GestureDetector(
-                            child: Text('Entre ou Cadastra-se',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 16.0, fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            onTap: (){
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                  LoginScreen()
-                              ));
-                            },
-                          )
-                        ],
-                      ),
-                    )
+                        left: 0.0,
+                        bottom: 0.0,
+                        child: ScopedModelDescendant<UserModel>(
+                          // ignore: missing_return
+                          builder: (context, child, model) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Olá, ${isNotLogged(model) ? "" : model.userData['name']}',
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                GestureDetector(
+                                  child: Text(
+                                    isNotLogged(model)
+                                        ? 'Entre ou Cadastra-se'
+                                        : 'Sair',
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () {
+                                    if (isNotLogged(model)) {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginScreen()));
+                                    } else {
+                                      model.signOut();
+                                    }
+                                  },
+                                )
+                              ],
+                            );
+                          },
+                        ))
                   ],
                 ),
               ),
               Divider(),
-              DrawerTile(Icons.home, "Inicio", pageController,0),
-              DrawerTile(Icons.list, "Produtos", pageController,1),
-              DrawerTile(Icons.location_on, "Lojas",pageController,2),
-              DrawerTile(Icons.playlist_add_check, "Meus Pedidos",pageController,3)
+              DrawerTile(Icons.home, "Inicio", pageController, 0),
+              DrawerTile(Icons.list, "Produtos", pageController, 1),
+              DrawerTile(Icons.location_on, "Lojas", pageController, 2),
+              DrawerTile(
+                  Icons.playlist_add_check, "Meus Pedidos", pageController, 3)
             ],
           )
         ],

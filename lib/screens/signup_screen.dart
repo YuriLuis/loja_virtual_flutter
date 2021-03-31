@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:loja_virtual_flutter/models/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-
 class SignInScreen extends StatefulWidget {
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -15,18 +14,22 @@ class _SignInScreenState extends State<SignInScreen> {
   final _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Criar Conta'),
           centerTitle: true,
         ),
         body: ScopedModelDescendant<UserModel>(
-          builder: (context, child, model){
-            if(model.isLoading){
-              return Center(child: CircularProgressIndicator(),);
+          builder: (context, child, model) {
+            if (model.isLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
             }
             return Form(
               key: _formKey,
@@ -37,8 +40,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: _nameController,
                     decoration: InputDecoration(hintText: 'Nome Completo'),
                     // ignore: missing_return
-                    validator: (text){
-                      if(text.isEmpty){
+                    validator: (text) {
+                      if (text.isEmpty) {
                         return 'Nome inválido!';
                       }
                     },
@@ -51,8 +54,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: InputDecoration(hintText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
                     // ignore: missing_return
-                    validator: (text){
-                      if(text.isEmpty || !text.contains('@')){
+                    validator: (text) {
+                      if (text.isEmpty || !text.contains('@')) {
                         return 'Email inválido!';
                       }
                     },
@@ -65,8 +68,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: InputDecoration(hintText: 'Senha'),
                     obscureText: true,
                     // ignore: missing_return
-                    validator: (text){
-                      if(text.isEmpty || text.length <6){
+                    validator: (text) {
+                      if (text.isEmpty || text.length < 6) {
                         return 'Senha inválida!';
                       }
                     },
@@ -78,8 +81,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: _addressController,
                     decoration: InputDecoration(hintText: 'Endereço'),
                     // ignore: missing_return
-                    validator: (text){
-                      if(text.isEmpty){
+                    validator: (text) {
+                      if (text.isEmpty) {
                         return 'Endereço inválido!';
                       }
                     },
@@ -89,13 +92,17 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      if(_formKey.currentState.validate()){
+                      if (_formKey.currentState.validate()) {
                         Map<String, dynamic> userData = {
-                          'name' : _nameController.text,
-                          'email' : _emailController.text,
-                          'address' : _addressController.text
+                          'name': _nameController.text,
+                          'email': _emailController.text,
+                          'address': _addressController.text
                         };
-                        model.signUp(userData: userData, pass: _passController.text, onSucess: _onSucess, onFailure: _onFailure);
+                        model.signUp(
+                            userData: userData,
+                            pass: _passController.text,
+                            onSucess: _onSucess,
+                            onFailure: _onFailure);
                       }
                     },
                     child: Text(
@@ -109,11 +116,30 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             );
           },
-        )
+        ));
+  }
+
+  void _onSucess() {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text('Usuário criado com sucesso!'),
+      backgroundColor: Theme.of(context).primaryColor,
+      duration: Duration(seconds: 2),
+    ));
+    
+    Future.delayed(Duration(seconds: 2)).then((value) =>
+      Navigator.of(context).pop()
     );
   }
 
-  void _onSucess(){}
-  void _onFailure(){}
-}
+  void _onFailure() {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text('Falha ao criar usuário!'),
+      backgroundColor: Colors.redAccent,
+      duration: Duration(seconds: 2),
+    ));
 
+    Future.delayed(Duration(seconds: 2)).then((value) =>
+        Navigator.of(context).pop()
+    );
+  }
+}

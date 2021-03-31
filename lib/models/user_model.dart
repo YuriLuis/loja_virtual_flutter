@@ -38,9 +38,7 @@ class UserModel extends Model {
   void signIn() async {
     this.isLoading = true;
     notifyListeners();
-
     await Future.delayed(Duration(seconds: 3));
-
     this.isLoading = false;
     notifyListeners();
   }
@@ -48,11 +46,21 @@ class UserModel extends Model {
   void recoverPass() {}
 
   // ignore: missing_return
-  bool isLoggedIn() {}
+  bool isLoggedIn() {
+    return firebaseUser != null;
+  }
 
   // ignore: missing_return
   Future<Null> _saveUserData(Map<String, dynamic> userData) async{
     this.userData = userData;
     await Firestore.instance.collection('users').document(firebaseUser.uid).setData(userData);
   }
+
+  void signOut()async {
+    await _auth.signOut();
+    userData = Map();
+    firebaseUser = null;
+    notifyListeners();
+  }
+
 }
