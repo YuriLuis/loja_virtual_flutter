@@ -15,7 +15,7 @@ class CartModel extends Model{
     Firestore.instance.collection('users').document(user.firebaseUser.uid)
     .collection('cart').add(cartProduct.toMap())
     .then((value) =>
-      cartProduct.cid = value.documentID;
+      cartProduct.cid = value.documentID
     );
     notifyListeners();
   }
