@@ -116,7 +116,6 @@ class _ProductScreenState extends State<ProductScreen> {
                               cartProduct.pid = product.id;
                               cartProduct.category = product.category;
                               CartModel.of(context).addCartItem(cartProduct);
-
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => CartScreen()));
                             } else {
