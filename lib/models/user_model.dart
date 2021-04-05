@@ -11,6 +11,10 @@ class UserModel extends Model {
   Map<String, dynamic> userData = Map();
 
   //usuario atual
+  static UserModel of(BuildContext context){
+    return ScopedModel.of<UserModel>(context);
+  }
+
 
   bool isLoading = false;
 

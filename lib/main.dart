@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModel<UserModel>( // User model
         model: UserModel(),
-        child: ScopedModelDescendant(
+        child: ScopedModelDescendant<UserModel>(
           // ignore: missing_return
           builder: (context, child, userModel){
             return ScopedModel<CartModel>(   // Cart model
