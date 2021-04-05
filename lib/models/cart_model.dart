@@ -4,31 +4,78 @@ import 'package:loja_virtual_flutter/datas/cart_product.dart';
 import 'package:loja_virtual_flutter/models/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class CartModel extends Model{
-
+class CartModel extends Model {
   UserModel user;
   List<CartProduct> products = [];
   bool isLoading = false;
 
-  CartModel(this.user);
+  CartModel(this.user){
+    if(user.isLoggedIn()){
+      _loadingCartItems();
+    }
+  }
 
-  static CartModel of(BuildContext context){return ScopedModel.of(context);}
+  static CartModel of(BuildContext context) {
+    return ScopedModel.of(context);
+  }
 
-  void addCartItem(CartProduct cartProduct){
+  void addCartItem(CartProduct cartProduct) {
     products.add(cartProduct);
-    Firestore.instance.collection('users').document(user.firebaseUser.uid)
-    .collection('cart').add(cartProduct.toMap())
-    .then((doc) =>
-      cartProduct.cid = doc.documentID
-    );
+    Firestore.instance
+        .collection('users')
+        .document(user.firebaseUser.uid)
+        .collection('cart')
+        .add(cartProduct.toMap())
+        .then((doc) => cartProduct.cid = doc.documentID);
     notifyListeners();
   }
 
-  void removeCartItem(CartProduct cartProduct){
-    Firestore.instance.collection('users').document(user.firebaseUser.uid)
-        .collection('cart').document(cartProduct.cid).delete();
+  void removeCartItem(CartProduct cartProduct) {
+    Firestore.instance
+        .collection('users')
+        .document(user.firebaseUser.uid)
+        .collection('cart')
+        .document(cartProduct.cid)
+        .delete();
 
     products.remove(cartProduct);
+    notifyListeners();
+  }
+
+  void decProduct(CartProduct cartProduct) {
+    cartProduct.quantity--;
+
+    Firestore.instance
+        .collection('users')
+        .document(user.firebaseUser.uid)
+        .collection('cart')
+        .document(cartProduct.cid)
+        .updateData(cartProduct.toMap());
+
+    notifyListeners();
+  }
+
+  void incProduct(CartProduct cartProduct) {
+    cartProduct.quantity++;
+
+    Firestore.instance
+        .collection('users')
+        .document(user.firebaseUser.uid)
+        .collection('cart')
+        .document(cartProduct.cid)
+        .updateData(cartProduct.toMap());
+    notifyListeners();
+  }
+
+  void _loadingCartItems() async {
+    QuerySnapshot query = await Firestore.instance
+        .collection('users')
+        .document(user.firebaseUser.uid)
+        .collection('cart')
+        .getDocuments();
+
+    products =
+        query.documents.map((doc) => CartProduct.fromDocument(doc)).toList();
     notifyListeners();
   }
 }
