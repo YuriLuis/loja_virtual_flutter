@@ -86,4 +86,29 @@ class CartModel extends Model {
     this.couponCode = couponCode;
     this.discountPercentage = discountPercentage;
   }
+
+  // ignore: missing_return
+  double getProductsPrice(){
+    double price = 0.0;
+    for(CartProduct c in products){
+      if(c.productData != null){
+        price += c.quantity * c.productData.price;
+      }
+    }
+    return price;
+  }
+
+  void  updatePrices(){
+    notifyListeners();
+  }
+
+  // ignore: missing_return
+  double getShipPrice(){
+    return 10.0;
+  }
+
+  // ignore: missing_return
+  double getDiscount(){
+    return getProductsPrice() * discountPercentage / 100;
+  }
 }

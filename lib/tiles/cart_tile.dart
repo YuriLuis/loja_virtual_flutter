@@ -13,6 +13,7 @@ class CartTile extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: missing_return
     Widget _buildContent() {
+        CartModel.of(context).updatePrices();
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
