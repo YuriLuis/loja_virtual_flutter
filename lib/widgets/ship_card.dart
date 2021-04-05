@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:loja_virtual_flutter/models/cart_model.dart';
 
 class ShipCard extends StatelessWidget {
   @override
