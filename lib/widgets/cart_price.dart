@@ -18,6 +18,7 @@ class CartPrice extends StatelessWidget {
             double price = model.getProductsPrice();
             double discount = model.getDiscount();
             double ship = model.getShipPrice();
+            double total = model.getTotalCart();
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -55,7 +56,7 @@ class CartPrice extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Total', style: TextStyle(fontWeight: FontWeight.w500),),
-                    Text(' R\$ ${(price + ship - discount)}', style: TextStyle(color: __corPadrao , fontSize: 16.0),)
+                    Text(' R\$ ${total.toStringAsFixed(2)}', style: TextStyle(color: __corPadrao , fontSize: 16.0),)
                   ],
                 ),
                 SizedBox(height: 12.0,),

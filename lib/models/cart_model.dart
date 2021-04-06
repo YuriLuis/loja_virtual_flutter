@@ -111,4 +111,8 @@ class CartModel extends Model {
   double getDiscount(){
     return getProductsPrice() * discountPercentage / 100;
   }
+
+  double getTotalCart(){
+    return getProductsPrice() + getShipPrice() - getDiscount();
+  }
 }
