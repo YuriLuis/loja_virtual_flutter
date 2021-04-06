@@ -12,8 +12,8 @@ class CartModel extends Model {
   String couponCode;
   int discountPercentage = 0;
 
-  CartModel(this.user){
-    if(user.isLoggedIn()){
+  CartModel(this.user) {
+    if (user.isLoggedIn()) {
       _loadingCartItems();
     }
   }
@@ -58,6 +58,54 @@ class CartModel extends Model {
     notifyListeners();
   }
 
+  Future<String> finishOrder() async {
+    if (products.length == 0) {
+      return null;
+    } else {
+      isLoading = true;
+      notifyListeners();
+
+      double productsPrice = getProductsPrice();
+      double shipPrice = getShipPrice();
+      double discount = getDiscount();
+      double total = getTotalCart();
+
+      //Adiciona o pedido na collections orders no firestore
+      DocumentReference reference =
+      await Firestore.instance.collection('orders').add({
+        'clientId': user.firebaseUser.uid,
+        'products': products.map((cartProduct) => cartProduct.toMap()).toList(),
+        'shipPrice': shipPrice,
+        'productsPrice': productsPrice,
+        'discount': discount,
+        'total': total,
+        'status': 1
+      });
+
+      Firestore.instance
+          .collection('users')
+          .document(user.firebaseUser.uid)
+          .collection('orders')
+          .document(reference.documentID)
+          .setData({'orderId': reference.documentID});
+
+      QuerySnapshot query = await Firestore.instance.collection('users')
+          .document(user.firebaseUser.uid).collection('cart')
+          .getDocuments();
+      for(DocumentSnapshot doc in query.documents){
+        doc.reference.delete();
+      }
+
+      products.clear();
+      discountPercentage = 0;
+      couponCode = null;
+      isLoading = false;
+      notifyListeners();
+
+      return reference.documentID;
+    }
+  }
+
   void incProduct(CartProduct cartProduct) {
     cartProduct.quantity++;
 
@@ -82,37 +130,37 @@ class CartModel extends Model {
     notifyListeners();
   }
 
-  void setCoupon(String couponCode, int discountPercentage){
+  void setCoupon(String couponCode, int discountPercentage) {
     this.couponCode = couponCode;
     this.discountPercentage = discountPercentage;
   }
 
   // ignore: missing_return
-  double getProductsPrice(){
+  double getProductsPrice() {
     double price = 0.0;
-    for(CartProduct c in products){
-      if(c.productData != null){
+    for (CartProduct c in products) {
+      if (c.productData != null) {
         price += c.quantity * c.productData.price;
       }
     }
     return price;
   }
 
-  void  updatePrices(){
+  void updatePrices() {
     notifyListeners();
   }
 
   // ignore: missing_return
-  double getShipPrice(){
+  double getShipPrice() {
     return 10.0;
   }
 
   // ignore: missing_return
-  double getDiscount(){
+  double getDiscount() {
     return getProductsPrice() * discountPercentage / 100;
   }
 
-  double getTotalCart(){
+  double getTotalCart() {
     return getProductsPrice() + getShipPrice() - getDiscount();
   }
 }
