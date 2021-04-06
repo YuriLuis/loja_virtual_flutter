@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:loja_virtual_flutter/models/cart_model.dart';
 import 'package:loja_virtual_flutter/models/user_model.dart';
 import 'package:loja_virtual_flutter/screens/login_screen.dart';
+import 'package:loja_virtual_flutter/screens/order_screen.dart';
 import 'package:loja_virtual_flutter/tiles/cart_tile.dart';
 import 'package:loja_virtual_flutter/widgets/cart_price.dart';
 import 'package:loja_virtual_flutter/widgets/discount_card.dart';
@@ -75,7 +76,6 @@ class CartScreen extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   )
                 ],
-
               ),
             );
           } else if (model.products == null || model.products.length == 0) {
@@ -86,24 +86,23 @@ class CartScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             );
-          }else {
+          } else {
             return ListView(
               children: [
                 Column(
-                  children: model.products.map(
-                      (product){
-                        return CartTile(product);
-                      }
-                  ).toList(),
+                  children: model.products.map((product) {
+                    return CartTile(product);
+                  }).toList(),
                 ),
                 DiscountCard(),
                 ShipCard(),
-                CartPrice(() async{
+                CartPrice(() async {
                   String orderId = await model.finishOrder();
-                  if(orderId != null){
-                    print(orderId);
+                  if (orderId != null) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => OrderScreen(orderId)));
                   }
-                })
+                }),
               ],
             );
           }
